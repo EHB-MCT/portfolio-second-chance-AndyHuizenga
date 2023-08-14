@@ -1,20 +1,23 @@
 body {
     margin: 0;
     padding: 0;
-    display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: white;
   }
   
-  .container {
+  .centerFocus {
     width: 80%;
     padding: 20% 0;
-    background-color: green; /* Change the background color to green */
+    background-color: rgb(100, 180, 100);
     text-align: center;
     color: white;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   
   @media screen and (max-width: 768px) {
@@ -23,4 +26,22 @@ body {
       padding: 30% 0;
     }
   }
+
+
+  
+  /* Custom bottom-buttons styles */
+  .bottom-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bottom-buttons .btn {
+    margin: 5px;
+  }
+  
   
