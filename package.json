@@ -2,8 +2,11 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.22.5"
   },
-
   "compilerOptions": {
     "allowJS": true
+  },
+  "dependencies": {
+    "knex": "^2.5.1",
+    "pg": "^8.11.2"
   }
 }
