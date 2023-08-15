@@ -1,0 +1,16 @@
+# Directories
+node_modules/
+dist/
+coverage/
+
+# Files
+.env
+
+# macOS files
+.DS_Store
+
+# Logs
+*.log
+
+# Dependency directories
+/express/node_modules/
