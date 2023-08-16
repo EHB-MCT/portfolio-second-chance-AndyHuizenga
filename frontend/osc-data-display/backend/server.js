@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors'); // 
+const cors = require('cors');
 const osc = require('osc');
 
 const app = express();
@@ -20,8 +20,13 @@ const udpPort = new osc.UDPPort({
 });
 
 udpPort.on('message', (oscMsg) => {
-  console.log('Received OSC message:', oscMsg);
-  receivedOSCData.push(oscMsg);
+  // Convert the OSC message to a string for easy comparison
+  const oscMsgStr = JSON.stringify(oscMsg);
+
+  if (oscMsg.address === '/ZIGSIM/t_2x-NTvYcRN220d/touch0') {
+    console.log('Received OSC message:', oscMsg);
+    receivedOSCData.push(oscMsg);
+  }
 });
 
 udpPort.open();
