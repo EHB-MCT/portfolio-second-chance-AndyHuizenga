@@ -1,35 +1,29 @@
-console.log('Before dotenv config');
-
 const express = require('express');
+const pool = require('./db'); // Import the database connection
 require('dotenv').config();
 
-
-
 const app = express();
-const db = require('./db'); 
-
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_PORT:', process.env.DB_PORT);
-console.log('DB_NAME:', process.env.DB_NAME);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-
 
 // Test route to check the database connection
 app.get('/test-db', async (req, res) => {
   try {
-    await db.any('SELECT 1');
+    // Use the pool to query the database
+    const client = await pool.connect();
+    const result = await client.query('SELECT 1');
+    client.release(); // Release the client back to the pool
+    console.log('Database connection successful');
     res.status(200).json({ message: 'Database connection successful' });
   } catch (error) {
-    console.error(error);
+    console.error('Database connection error:', error);
     res.status(500).json({ error: 'Database connection failed' });
   }
 });
 
-// ... Existing routes ...
+app.get('/', (req, res) => {
+  res.send('Hello, this is the homepage of your application!');
+});
 
-const PORT = process.env.PORT || 5100;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

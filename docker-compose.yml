@@ -3,8 +3,34 @@ services:
   backend:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: backend/docker/Dockerfile # Adjust the path to your Dockerfile
     ports:
-      - '5100:5100'
+      - "5001:5001"
     env_file:
       - .env
+    depends_on:
+      - postgres-server
+    command: sh -c "kill-port 5001 && npm install && sleep 10 && npm start" # Add kill-port command
+  postgres-server:
+    image: postgres
+    container_name: postgres-server
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: andy.huizenga@student.ehb.be
+      PGADMIN_DEFAULT_PASSWORD: Huizen03ga01
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
