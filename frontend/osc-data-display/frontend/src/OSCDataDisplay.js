@@ -3,16 +3,16 @@ import React, { useState, useEffect } from 'react';
 function OSCDataDisplay() {
   const [oscData, setOSCData] = useState([]);
 
-useEffect(() => {
-  // Simulate receiving OSC data
-  const simulatedOSCData = [
-    { touch: { x: 0.1179487, y: 0.3671241 } },
-    // Add more simulated data here
-  ];
-
-  setOSCData(simulatedOSCData);
-}, []);
-
+  useEffect(() => {
+    fetch('http://localhost:3001/oscdata') // Use the complete URL to your backend
+      .then((response) => response.json())
+      .then((data) => {
+        setOSCData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching OSC data:', error);
+      });
+  }, []);
 
   return (
     <div>
