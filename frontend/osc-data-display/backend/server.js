@@ -20,14 +20,18 @@ const udpPort = new osc.UDPPort({
 });
 
 udpPort.on('message', (oscMsg) => {
-  // Convert the OSC message to a string for easy comparison
-  const oscMsgStr = JSON.stringify(oscMsg);
-
   if (oscMsg.address === '/ZIGSIM/t_2x-NTvYcRN220d/touch0') {
-    console.log('Received OSC message:', oscMsg);
-    receivedOSCData.push(oscMsg);
+    const transformedMessage = {
+      "X-POS": oscMsg.args[0].value,
+      "Y-POS": oscMsg.args[1].value
+    };
+    
+    console.log('Received OSC message:', transformedMessage);
+    
+    receivedOSCData.push(transformedMessage);
   }
 });
+
 
 udpPort.open();
 
