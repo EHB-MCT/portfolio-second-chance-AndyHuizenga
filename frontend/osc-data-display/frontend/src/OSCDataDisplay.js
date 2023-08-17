@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './OSCDataDisplay.css'; // Import your local CSS file
 import { handleClearData } from './Buttons';
-// ...
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function OSCDataDisplay() {
   const [oscData, setOSCData] = useState([]);
@@ -18,14 +17,16 @@ function OSCDataDisplay() {
       });
   }, []);
 
- 
-
   return (
     <div>
       <h1>OSC Data Display</h1>
-      <button onClick={handleClearData}>Clear OSC Data</button>
-      <table>
-        <thead>
+      
+      <button onClick={handleClearData} className="btn btn-danger ">
+        Clear OSC Data
+      </button>
+      <div className="tableS">
+      <table class="table table-bordered table-width-80" >
+      <thead class="thead-dark">
           <tr>
             <th>X-POS</th>
             <th>Y-POS</th>
@@ -40,6 +41,9 @@ function OSCDataDisplay() {
           ))}
         </tbody>
       </table>
+</div>
+
+      
     </div>
   );
 }

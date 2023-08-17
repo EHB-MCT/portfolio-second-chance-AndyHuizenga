@@ -46,7 +46,17 @@ const PaintingCanvas = () => {
     };
   }, [isPainting, drawing, strokeColor ]);
 
+  const handleClearCanvas = () => {
+    setDrawing([]); // Clear the drawing array
+  };
+  
+
   return (
+
+    <div>
+            <h1>Paintig canvas</h1>
+            <button onClick={handleClearCanvas} className="btn btn-danger mt-2">Clear Canvas</button>
+
     <div className="painting-canvas-container">
       <div className="canvas">
         <svg className="drawing">
@@ -61,6 +71,7 @@ const PaintingCanvas = () => {
           ))}
         </svg>
       </div>
+    </div>
     </div>
   );
 };

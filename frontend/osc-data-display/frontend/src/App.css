@@ -48,3 +48,13 @@
 .nav-item {
   margin: 0 100px; /* Add spacing between navigation items */
 }
+
+.navbar {
+  margin-bottom: 10px;
+}
+
+
+body {
+  background-color: #f8f9fa; /* Light grey color */
+}
+

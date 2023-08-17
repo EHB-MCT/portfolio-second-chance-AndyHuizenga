@@ -1,16 +1,6 @@
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #ccc;
-  }
+
+.tableS {
+  width: 80%;
+  margin:  30px auto;
   
-  th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
-  
+}
