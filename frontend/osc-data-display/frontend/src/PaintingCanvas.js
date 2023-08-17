@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PaintingCanvas.css';
 
-const PaintingCanvas = () => {
+const PaintingCanvas = ({ width, height }) => {
   const [isPainting, setIsPainting] = useState(false);
   const [strokeColor, setStrokeColor] = useState('#0000FF');
   const [drawing, setDrawing] = useState([]);
@@ -18,8 +18,7 @@ const PaintingCanvas = () => {
     const handleMouseMove = (event) => {
       if (!isPainting) return;
       const { clientX, clientY } = event;
-      const canvas = document.querySelector('.canvas');
-      const rect = canvas.getBoundingClientRect();
+      const rect = event.target.getBoundingClientRect();
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
@@ -34,28 +33,34 @@ const PaintingCanvas = () => {
       setIsPainting(false);
     };
 
-    const canvas = document.querySelector('.canvas');
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isPainting, drawing, strokeColor ]);
+  }, [isPainting, drawing]);
+
+  const handleClearCanvas = () => {
+    setDrawing([]);
+  };
 
   return (
     <div className="painting-canvas-container">
-      <div className="canvas">
-        <svg className="drawing">
+      <div className="canvas" style={{ width, height }}>
+        <button className="clear-button" onClick={handleClearCanvas}>
+          Clear Canvas
+        </button>
+        <svg className="drawing" style={{ width, height }}>
           {drawing.map((line, index) => (
             <polyline
               key={index}
               points={line.map(({ x, y }) => `${x},${y}`).join(' ')}
               fill="none"
-              stroke={strokeColor} // Use the selected stroke color
+              stroke={strokeColor}
               strokeWidth="3"
             />
           ))}

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './OSCDataDisplay.css'; // Import your local CSS file
-
-// ...
-
+import PaintingCanvas from './PaintingCanvas';
 
 function OSCDataDisplay() {
   const [oscData, setOSCData] = useState([]);
@@ -37,6 +35,7 @@ function OSCDataDisplay() {
           ))}
         </tbody>
       </table>
+      <PaintingCanvas width={800} height={600} />
     </div>
   );
 }
