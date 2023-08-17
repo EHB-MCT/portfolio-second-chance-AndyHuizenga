@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './OSCDataDisplay.css'; // Import your local CSS file
-
+import { handleClearData } from './Buttons';
 // ...
 
 
@@ -18,9 +18,12 @@ function OSCDataDisplay() {
       });
   }, []);
 
+ 
+
   return (
     <div>
       <h1>OSC Data Display</h1>
+      <button onClick={handleClearData}>Clear OSC Data</button>
       <table>
         <thead>
           <tr>

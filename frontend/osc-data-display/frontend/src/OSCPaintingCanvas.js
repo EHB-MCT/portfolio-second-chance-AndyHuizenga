@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PaintingCanvas.css';
+import { handleClearData } from './Buttons';
 
 const OSPPaintingCanvas = () => {
   const [drawing, setDrawing] = useState([]);
@@ -8,6 +9,7 @@ const OSPPaintingCanvas = () => {
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
+    
     const canvasElement = document.querySelector('.canvas');
     setCanvasDimensions({
         width: canvasElement.offsetWidth,
@@ -39,10 +41,21 @@ const OSPPaintingCanvas = () => {
   const handleSaveDrawing = () => {
     setIsDrawingSaved(true);
     console.log('Drawing saved');
+    alert('Drawing with OSC saved');
+    const savedDrawingData = [...drawing];
+    console.log('Saved Drawing Data:', savedDrawingData);
+  };
+
+  const handleClearDrawing = () => {
+    // Clear the drawing data array
+    setDrawing([]);
+    console.log('Drawing data cleared');
   };
 
   return (
     <div className="painting-canvas-container">
+         
+
       <div className="canvas">
         <svg className="drawing">
         {drawing.map((circle, index) => (
@@ -59,9 +72,9 @@ const OSPPaintingCanvas = () => {
       </div>
       <div className="button-container">
         <button onClick={handleStartDrawing}>Start OSC Drawing</button>
-        <button onClick={handleSaveDrawing} disabled={!isDrawingStarted}>
-          Save Drawing
-        </button>
+        <button onClick={handleSaveDrawing} disabled={!isDrawingStarted}>Save Drawing </button>
+<button onClick={handleClearDrawing}>Clear Drawing</button>
+<button onClick={handleClearData}>Clear OSC Data</button>
       </div>
     </div>
   );

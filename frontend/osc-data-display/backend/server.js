@@ -38,3 +38,8 @@ udpPort.open();
 app.get('/oscdata', (req, res) => {
   res.json(receivedOSCData);
 });
+
+app.post('/cleardata', (req, res) => {
+  receivedOSCData.length = 0; // Clear the receivedOSCData array
+  res.json({ message: 'OSC data cleared' });
+});
