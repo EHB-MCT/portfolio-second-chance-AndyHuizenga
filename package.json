@@ -4,8 +4,8 @@
   "description": "ThePainter - paint with your phone",
   "main": "server.js",
   "scripts": {
-    "start": "node backend/src/server.js",
-    "start-dev": "nodemon backend/src/server.js",
+    "start": "node frontend/osc-data-display/backend/server.js",
+    "start-dev": "nodemon frontend/osc-data-display/backend/server.js",
     "test": "jest"
   },
   "keywords": [],
