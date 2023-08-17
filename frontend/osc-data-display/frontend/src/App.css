@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+.navbar-collapse {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-nav {
+  flex-direction: row; /* Align links horizontally */
+}
+
+.nav-item {
+  margin: 0 100px; /* Add spacing between navigation items */
+}
