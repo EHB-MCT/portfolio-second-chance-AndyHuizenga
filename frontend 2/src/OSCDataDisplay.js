@@ -25,8 +25,8 @@ function OSCDataDisplay() {
         Clear OSC Data
       </button>
       <div className="tableS">
-      <table class="table table-bordered table-width-80" >
-      <thead class="thead-dark">
+      <table className="table table-bordered table-width-80" >
+      <thead className="thead-dark">
           <tr>
             <th>X-POS</th>
             <th>Y-POS</th>

@@ -10,35 +10,37 @@ const OSPPaintingCanvas = () => {
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    
     const canvasElement = document.querySelector('.canvas');
-    setCanvasDimensions({
-        width: canvasElement.offsetWidth,
-        height: canvasElement.offsetHeight,
-      });
-    if (isDrawingStarted) {
-      // Fetch OSC data from your backend server
-      fetch('http://localhost:3001/oscdata')
-        .then((response) => response.json())
-        .then((data) => {
-          const transformedData = data.map((entry) => ({
-            y: mapOSCValueToY(entry['X-POS'], canvasDimensions.height),
-            x: mapOSCValueToX(entry['Y-POS'], canvasDimensions.width),
-            
-          }));
-          setDrawing(transformedData);
-        })
-        .catch((error) => {
-          console.error('Error fetching OSC data:', error);
-        });
-    }
-  }, [isDrawingStarted, canvasDimensions]);
+    const dimensions = {
+      width: canvasElement.offsetWidth,
+      height: canvasElement.offsetHeight,
+    };
+    setCanvasDimensions(dimensions);
   
+    // Create WebSocket connection
+    const socket = new WebSocket('ws://localhost:3001');
+    console.log(' WebSocket connected - OSC');
+    socket.addEventListener('message', (event) => {
+      const oscData = JSON.parse(event.data);
+      const newDot = {
+        x: mapOSCValueToX(oscData['Y-POS'], dimensions.width),
+        y: mapOSCValueToY(oscData['X-POS'], dimensions.height),
+      };
+
+      console.log('newDot', newDot);
+      setDrawing(prevDrawing => [...prevDrawing, newDot]);
+    });
+  
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        console.log('Closing WebSocket connection');
+        socket.close();
+      }
+    };
+  }, [drawing]); // You should include 'drawing' as a dependency
 
   const handleStartDrawing = () => {
-    handleClearData()
     setIsDrawingStarted(true);
-  
     console.log('Drawing with OSC started');
   };
 
@@ -48,21 +50,35 @@ const OSPPaintingCanvas = () => {
     alert('Drawing with OSC saved');
     const savedDrawingData = [...drawing];
     console.log('Saved Drawing Data:', savedDrawingData);
+    
+    fetch('http://localhost:5002/savedrawing', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ savedDrawingData }), // Sending the data as JSON
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+      })
+      .catch((error) => {
+        console.error('Error saving drawing data:', error);
+      });
   };
-
-
+  
   const mapOSCValueToX = (oscValue, canvasWidth) => {
     // Calculate X coordinate using the formula
-    return (oscValue + 1.2) * (canvasWidth/2 );
+    return (oscValue + 1.2) * (canvasWidth / 2);
   };
 
   const mapOSCValueToY = (oscValue, canvasHeight) => {
     // Calculate Y coordinate using the formula
-    return ( - oscValue + 0.9) * (canvasHeight/2);
+    return (-oscValue + 0.9) * (canvasHeight / 2);
   };
 
   return (
-
+    
     <div>
     <h1>OSC Painting Canvas</h1>
    <div className="btn-group" role="group" aria-label="Button group ">
@@ -102,6 +118,7 @@ const OSPPaintingCanvas = () => {
          </div>
        </div>
   </div>
+
 
   );
 };
