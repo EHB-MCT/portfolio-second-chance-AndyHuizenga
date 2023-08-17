@@ -36,7 +36,9 @@ const OSPPaintingCanvas = () => {
   
 
   const handleStartDrawing = () => {
+    handleClearData()
     setIsDrawingStarted(true);
+  
     console.log('Drawing with OSC started');
   };
 
