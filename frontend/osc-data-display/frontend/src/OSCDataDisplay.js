@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import './OSCDataDisplay.css'; // Import your local CSS file
+
+// ...
+
 
 function OSCDataDisplay() {
   const [oscData, setOSCData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/oscdata') // Use the complete URL to your backend
+    fetch('http://localhost:3001/oscdata')
       .then((response) => response.json())
       .then((data) => {
         setOSCData(data);
@@ -17,11 +21,22 @@ function OSCDataDisplay() {
   return (
     <div>
       <h1>OSC Data Display</h1>
-      <ul>
-        {oscData.map((data, index) => (
-          <li key={index}>{JSON.stringify(data)}</li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>X-POS</th>
+            <th>Y-POS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {oscData.map((data, index) => (
+            <tr key={index}>
+              <td>{data['X-POS']}</td>
+              <td>{data['Y-POS']}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

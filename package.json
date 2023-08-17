@@ -20,6 +20,7 @@
     "osc-js": "^2.4.0",
     "pg": "^8.11.2",
     "pg-promise": "^10.15.4",
+    "react-router-dom": "^6.15.0",
     "ws": "^8.13.0"
   },
   "devDependencies": {
