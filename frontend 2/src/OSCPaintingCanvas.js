@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PaintingCanvas.css';
 import { handleClearData } from './Buttons';
+import { clearCanvas } from './Buttons';
 
 
 const OSPPaintingCanvas = () => {
@@ -77,6 +78,14 @@ const OSPPaintingCanvas = () => {
     return (-oscValue + 0.9) * (canvasHeight / 2);
   };
 
+  const fullClear = () => {
+    // Clear the drawing data
+    setDrawing([]);
+    // Clear OSC data on the server
+    handleClearData();
+  };
+
+
   return (
     
     <div>
@@ -92,7 +101,7 @@ const OSPPaintingCanvas = () => {
   >
     Save Drawing
   </button>
-  <button onClick={handleClearData} className="btn btn-danger me-1">
+  <button onClick={fullClear} className="btn btn-danger me-1">
     Clear OSC Data
   </button>
 </div>
