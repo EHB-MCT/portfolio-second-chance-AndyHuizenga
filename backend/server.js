@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
   res.send('Hello, this is the homepage of your application!');
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = 5002; 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -10,7 +10,7 @@ services:
       - .env
     depends_on:
       - postgres-server
-    command: sh -c "kill-port 5001 && npm install && sleep 10 && npm start" 
+    command: "npm install && sleep 10 && npm start" 
   postgres-server:
     image: postgres
     container_name: postgres-server
