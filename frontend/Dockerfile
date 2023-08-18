@@ -2,7 +2,7 @@
 FROM node:14
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /app/src/
 
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
@@ -13,8 +13,8 @@ RUN npm install
 # Copy the rest of the application code to the container
 COPY . .
 
-# Expose the port that your server will listen on
-EXPOSE 5100
+# Expose the port that your frontend will run on
+EXPOSE 3000
 
-# Command to start your application
-CMD [ "npm", "run", "start-dev" ]
+# Command to start your frontend application
+CMD [ "npm", "start" ]

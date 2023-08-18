@@ -2,8 +2,11 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "ocs": "^1.1.0",
     "osc": "^2.4.4",
     "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "jest": "^27.4.5",
+    "nodemon": "^3.0.1"
   }
 }

@@ -9,6 +9,7 @@ const OSPPaintingCanvas = () => {
   const [isDrawingStarted, setIsDrawingStarted] = useState(false);
   const [isDrawingSaved, setIsDrawingSaved] = useState(false);
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
+  const [savedDrawingData, setSavedDrawingData] = useState([]); 
 
   useEffect(() => {
     const canvasElement = document.querySelector('.canvas');
@@ -44,15 +45,16 @@ const OSPPaintingCanvas = () => {
     setIsDrawingStarted(true);
     console.log('Drawing with OSC started');
   };
+ 
 
   const handleSaveDrawing = async () => {
     setIsDrawingSaved(true);
     console.log('Drawing saved');
-  
+
     const chunkSize = 100; // Number of points to send in each chunk
     for (let i = 0; i < savedDrawingData.length; i += chunkSize) {
       const chunk = savedDrawingData.slice(i, i + chunkSize);
-  
+
       try {
         const response = await fetch('http://localhost:5002/savedrawing', {
           method: 'POST',
@@ -61,7 +63,7 @@ const OSPPaintingCanvas = () => {
           },
           body: JSON.stringify({ savedDrawingData: chunk }), // Sending a chunk of data
         });
-  
+
         const data = await response.json();
         console.log(data.message);
       } catch (error) {

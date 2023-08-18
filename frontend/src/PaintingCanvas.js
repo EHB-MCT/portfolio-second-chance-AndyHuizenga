@@ -3,6 +3,7 @@ import './PaintingCanvas.css';
 
 const PaintingCanvas = () => {
   const [isPainting, setIsPainting] = useState(false);
+  const [strokeColor, setStrokeColor] = useState('#0000FF');
   const [drawing, setDrawing] = useState([]);
 
   useEffect(() => {
