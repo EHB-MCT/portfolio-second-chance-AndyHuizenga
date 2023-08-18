@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PaintingCanvas.css';
 import { handleClearData } from './Buttons';
-import { clearCanvas } from './Buttons';
+
 
 
 const OSPPaintingCanvas = () => {
@@ -45,28 +45,31 @@ const OSPPaintingCanvas = () => {
     console.log('Drawing with OSC started');
   };
 
-  const handleSaveDrawing = () => {
+  const handleSaveDrawing = async () => {
     setIsDrawingSaved(true);
     console.log('Drawing saved');
-    alert('Drawing with OSC saved');
-    const savedDrawingData = [...drawing];
-    console.log('Saved Drawing Data:', savedDrawingData);
-    
-    fetch('http://localhost:5002/savedrawing', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ savedDrawingData }), // Sending the data as JSON
-    })
-      .then((response) => response.json())
-      .then((data) => {
+  
+    const chunkSize = 100; // Number of points to send in each chunk
+    for (let i = 0; i < savedDrawingData.length; i += chunkSize) {
+      const chunk = savedDrawingData.slice(i, i + chunkSize);
+  
+      try {
+        const response = await fetch('http://localhost:5002/savedrawing', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ savedDrawingData: chunk }), // Sending a chunk of data
+        });
+  
+        const data = await response.json();
         console.log(data.message);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error saving drawing data:', error);
-      });
+      }
+    }
   };
+  
   
   const mapOSCValueToX = (oscValue, canvasWidth) => {
     // Calculate X coordinate using the formula

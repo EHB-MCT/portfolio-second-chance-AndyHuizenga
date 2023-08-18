@@ -13,8 +13,15 @@ app.use(cors());
 
 // Test route to check the database connection
 app.get('/test-db', async (req, res) => {
-  // ... (your existing code)
-});
+    try {
+      await pool.query('SELECT 1'); 
+      res.status(200).json({ message: 'Database connection successful' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Database connection failed' });
+    }
+  });
+  
 
 // Server for OSC data
 const oscReceivedData = [];
@@ -81,7 +88,7 @@ app.server.on('upgrade', (request, socket, head) => {
   });
 });
 
-
+app.use(express.json());
 
 
 app.post('/savedrawing', async (req, res) => {
@@ -94,9 +101,31 @@ app.post('/savedrawing', async (req, res) => {
       
       res.status(200).json({ message: 'Drawing data saved successfully' });
     } catch (error) {
+      console.error('Error saving drawing data:', error); // Add this line to log the error
+      res.status(500).json({ error: 'Error saving drawing data' });
+    }
+});
+
+app.post('/savedrawingtest', async (req, res) => {
+    try {
+      const { data } = req.body; // Assuming you send the data as a JSON object
+  
+      const client = await pool.connect();
+      await client.query('INSERT INTO drawingstest (data) VALUES ($1)', [data]);
+      client.release();
+  
+      res.status(200).json({ message: 'Drawing data saved successfully' });
+    } catch (error) {
       console.error('Error saving drawing data:', error);
       res.status(500).json({ error: 'Error saving drawing data' });
     }
   });
+
+  app.get('/testroute', (req, res) => {
+    res.json({ message: 'Test route is working!' });
+  });
+  
+  
+
   
 
