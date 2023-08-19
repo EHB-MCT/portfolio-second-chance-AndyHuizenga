@@ -22,13 +22,7 @@ services:
       - app-network
     command: npm start
 
-  postgres-server:
-    image: postgres
-    container_name: postgres-server
-    environment:
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+
 
   pgadmin:
     image: dpage/pgadmin4

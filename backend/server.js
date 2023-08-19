@@ -67,3 +67,20 @@ app.post('/cleardata', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello, this is the homepage of your application!');
 });
+
+app.use(bodyParser.json());
+
+// Route to save drawing data to the database
+app.post('/savedrawing', async (req, res) => {
+  try {
+    const drawingData = req.body.savedDrawingData;
+    
+    // Save drawingData to your database
+    // Use appropriate database library and model to save the data
+
+    res.json({ message: 'Drawing data saved' });
+  } catch (error) {
+    console.error('Error saving drawing data:', error);
+    res.status(500).json({ error: 'Error saving drawing data' });
+  }
+});

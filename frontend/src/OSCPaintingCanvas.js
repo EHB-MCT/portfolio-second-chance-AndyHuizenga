@@ -24,49 +24,50 @@ const OSPPaintingCanvas = () => {
 
     // Add socket event listener for 'osc-data-update'
     socketInstance.on('osc-data-update', (oscData) => {
-      const newDot = {
-        x: mapOSCValueToX(oscData['Y-POS'], dimensions.width),
-        y: mapOSCValueToY(oscData['X-POS'], dimensions.height),
-      };
-      setDrawing(prevDrawing => [...prevDrawing, newDot]);
+      if (isDrawingStarted) {
+        const newDot = {
+          x: mapOSCValueToX(oscData['Y-POS'], dimensions.width),
+          y: mapOSCValueToY(oscData['X-POS'], dimensions.height),
+        };
+        setDrawing(prevDrawing => [...prevDrawing, newDot]);
+      }
     });
 
     // Clean up socket when component unmounts
     return () => {
       socketInstance.disconnect();
     };
-  }, []);
+  }, [isDrawingStarted]); // Listen for changes to isDrawingStarted
 
   const handleStartDrawing = () => {
     setIsDrawingStarted(true);
     console.log('Drawing with OSC started');
   };
+// Existing code...
 
-  const handleSaveDrawing = async () => {
-    setIsDrawingSaved(true);
-    console.log('Drawing saved');
+const handleSaveDrawing = async () => {
+  setIsDrawingSaved(true);
+  console.log('Drawing saved');
 
-    const chunkSize = 100; // Number of points to send in each chunk
-    for (let i = 0; i < drawing.length; i += chunkSize) {
-      const chunk = drawing.slice(i, i + chunkSize);
+  try {
+    // Send the drawing data to the backend for saving
+    const response = await fetch('http://localhost:3001/savedrawing', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ savedDrawingData: drawing }), // Sending the drawing data
+    });
 
-      try {
-        const response = await fetch('http://localhost:5002/savedrawing', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ savedDrawingData: chunk }), // Sending a chunk of data
-        });
+    const data = await response.json();
+    console.log(data.message);
+  } catch (error) {
+    console.error('Error saving drawing data:', error);
+  }
+};
 
-        const data = await response.json();
-        console.log(data.message);
-      } catch (error) {
-        console.error('Error saving drawing data:', error);
-      }
-    }
-  };
-  
+// Existing code...
+
   
   const mapOSCValueToX = (oscValue, canvasWidth) => {
     // Calculate X coordinate using the formula
@@ -85,50 +86,36 @@ const OSPPaintingCanvas = () => {
     handleClearData();
   };
 
-
   return (
-    
     <div>
-    <h1>OSC Painting Canvas</h1>
-   <div className="btn-group" role="group" aria-label="Button group ">
-  <button onClick={handleStartDrawing} className="btn btn-success me-2 ">
-    Start OSC Art
-  </button>
-  <button
-    onClick={handleSaveDrawing}
-    disabled={!isDrawingStarted}
-    className="btn btn-primary me-2"
-  >
-    Save Drawing
-  </button>
-  <button onClick={fullClear} className="btn btn-danger me-1">
-    Clear OSC Data
-  </button>
-</div>
+      <h1>OSC Painting Canvas</h1>
+      <div className="btn-group" role="group" aria-label="Button group ">
+        <button onClick={handleStartDrawing} className="btn btn-success me-2">
+          Start OSC Art
+        </button>
+        <button
+          onClick={handleSaveDrawing}
+          disabled={!isDrawingStarted}
+          className="btn btn-primary me-2"
+        >
+          Save Drawing
+        </button>
+        <button onClick={fullClear} className="btn btn-danger me-1">
+          Clear OSC Data
+        </button>
+      </div>
 
-
-    <div className="painting-canvas-container">
-         
-         <div className="canvas">
-         <svg className="drawing">
+      <div className="painting-canvas-container">
+        <div className="canvas">
+          <svg className="drawing">
             {drawing.map((circle, index) => (
-              <circle
-                key={index}
-                cx={circle.x}
-                cy={circle.y}
-                r="10"
-                fill="red"
-              />
+              <circle key={index} cx={circle.x} cy={circle.y} r="10" fill="red" />
             ))}
           </svg>
-         </div>
-         <div className="button-container">
-       
-         </div>
-       </div>
-  </div>
-
-
+        </div>
+        <div className="button-container"></div>
+      </div>
+    </div>
   );
 };
 

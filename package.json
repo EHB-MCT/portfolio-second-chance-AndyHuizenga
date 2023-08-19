@@ -12,6 +12,7 @@
   "author": "Andy Huizenga",
   "license": "MIT",
   "dependencies": {
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "sequelize": "^6.32.1"
   }
 }

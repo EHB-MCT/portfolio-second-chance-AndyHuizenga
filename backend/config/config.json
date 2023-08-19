@@ -1,0 +1,10 @@
+{
+  "development": {
+    "username": "postgres", 
+    "password": "postgres", 
+    "database": "thepainterdb", 
+    "host": "postgres-server", 
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}
