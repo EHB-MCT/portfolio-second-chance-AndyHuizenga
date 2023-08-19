@@ -2,31 +2,32 @@ const express = require('express');
 const cors = require('cors');
 const pool = require('./db'); // Import the database connection
 const osc = require('osc');
-const WebSocket = require('ws');
+const http = require('http'); // Import the http module
+const socketIo = require('socket.io'); // Import socket.io
 require('dotenv').config();
 
 const app = express();
-const wss = new WebSocket.Server({ noServer: true }); // Create WebSocket server
+const server = http.createServer(app); // Create a http server
+const io = socketIo(server); // Attach socket.io to the server
 
 // Use CORS middleware
 app.use(cors());
 
 // Test route to check the database connection
 app.get('/test-db', async (req, res) => {
-    try {
-      await pool.query('SELECT 1'); 
-      res.status(200).json({ message: 'Database connection successful' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Database connection failed' });
-    }
-  });
-  
+  try {
+    await pool.query('SELECT 1'); 
+    res.status(200).json({ message: 'Database connection successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Server for OSC data
 const oscReceivedData = [];
 
-const oscServer = app.listen(3001, () => {
+const oscServer = server.listen(3001, () => {
   console.log('OSC Server is running on port 3001');
 });
 
@@ -34,9 +35,7 @@ const udpPort = new osc.UDPPort({
   localAddress: '0.0.0.0',
   localPort: 6000,
   metadata: true,
-  
 });
-
 
 udpPort.on('message', (oscMsg) => {
   if (oscMsg.address === '/ZIGSIM/t_2x-NTvYcRN220d/touch0') {
@@ -49,16 +48,10 @@ udpPort.on('message', (oscMsg) => {
 
     oscReceivedData.push(transformedMessage);
 
-    // Send the new data to connected WebSocket clients
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(transformedMessage));
-        console.log('Received OSC updating ws:', );
-      }
-    });
+    // Send the new data to connected socket.io clients
+    io.emit('osc-data-update', transformedMessage);
   }
 });
-
 
 udpPort.open();
 
@@ -75,65 +68,4 @@ app.post('/cleardata', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello, this is the homepage of your application!');
 });
-
-const PORT = 5002;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-// WebSocket upgrade logic
-app.server = wss; // Store the WebSocket server instance in the app
-app.server.on('upgrade', (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (client) => {
-    wss.emit('connection', client, request);
-  });
-});
-
-
-
-app.use(express.json());
-
-
-app.post('/savedrawing', async (req, res) => {
-    try {
-      const { savedDrawingData } = req.body;
-      
-      const client = await pool.connect(); // Make sure to use `await pool.connect()`
-      await client.query('INSERT INTO drawings (data) VALUES ($1)', [savedDrawingData]);
-      client.release();
-      
-      res.status(200).json({ message: 'Drawing data saved successfully' });
-    } catch (error) {
-      console.error('Error saving drawing data:', error);
-      res.status(500).json({ error: 'Error saving drawing data' });
-    }
-  });
-
-app.post('/savedrawingtest', async (req, res) => {
-    try {
-      const { data } = req.body; // Assuming you send the data as a JSON object
-  
-      const client = await pool.connect();
-      await client.query('INSERT INTO drawingstest (data) VALUES ($1)', [data]);
-      client.release();
-  
-      res.status(200).json({ message: 'Drawing data saved successfully' });
-    } catch (error) {
-      console.error('Error saving drawing data:', error);
-      res.status(500).json({ error: 'Error saving drawing data' });
-    }
-  });
-
-  app.get('/testroute', (req, res) => {
-    res.json({ message: 'Test route is working!' });
-  });
-  
-  console.log(process.env.DB_HOST);
-console.log(process.env.DB_PORT);
-console.log(process.env.DB_NAME);
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASSWORD);
-
-
-  
 

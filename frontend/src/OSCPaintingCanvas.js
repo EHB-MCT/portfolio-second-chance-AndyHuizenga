@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './PaintingCanvas.css';
 import { handleClearData } from './Buttons';
-
-
+import io from 'socket.io-client'; // Import socket.io-client
 
 const OSPPaintingCanvas = () => {
   const [drawing, setDrawing] = useState([]);
   const [isDrawingStarted, setIsDrawingStarted] = useState(false);
   const [isDrawingSaved, setIsDrawingSaved] = useState(false);
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
-  const [savedDrawingData, setSavedDrawingData] = useState([]); 
+  const [socket, setSocket] = useState(null); // Add socket state
 
   useEffect(() => {
     const canvasElement = document.querySelector('.canvas');
@@ -18,42 +17,38 @@ const OSPPaintingCanvas = () => {
       height: canvasElement.offsetHeight,
     };
     setCanvasDimensions(dimensions);
-  
-    // Create WebSocket connection
-    const socket = new WebSocket('ws://localhost:3001');
-    console.log(' WebSocket connected - OSC');
-    socket.addEventListener('message', (event) => {
-      const oscData = JSON.parse(event.data);
+
+    // Create socket.io connection
+    const socketInstance = io('http://localhost:3001'); // Replace with your backend URL
+    setSocket(socketInstance);
+
+    // Add socket event listener for 'osc-data-update'
+    socketInstance.on('osc-data-update', (oscData) => {
       const newDot = {
         x: mapOSCValueToX(oscData['Y-POS'], dimensions.width),
         y: mapOSCValueToY(oscData['X-POS'], dimensions.height),
       };
-
-      console.log('newDot', newDot);
       setDrawing(prevDrawing => [...prevDrawing, newDot]);
     });
-  
+
+    // Clean up socket when component unmounts
     return () => {
-      if (socket.readyState === WebSocket.OPEN) {
-        console.log('Closing WebSocket connection');
-        socket.close();
-      }
+      socketInstance.disconnect();
     };
-  }, [drawing]); // You should include 'drawing' as a dependency
+  }, []);
 
   const handleStartDrawing = () => {
     setIsDrawingStarted(true);
     console.log('Drawing with OSC started');
   };
- 
 
   const handleSaveDrawing = async () => {
     setIsDrawingSaved(true);
     console.log('Drawing saved');
 
     const chunkSize = 100; // Number of points to send in each chunk
-    for (let i = 0; i < savedDrawingData.length; i += chunkSize) {
-      const chunk = savedDrawingData.slice(i, i + chunkSize);
+    for (let i = 0; i < drawing.length; i += chunkSize) {
+      const chunk = drawing.slice(i, i + chunkSize);
 
       try {
         const response = await fetch('http://localhost:5002/savedrawing', {
