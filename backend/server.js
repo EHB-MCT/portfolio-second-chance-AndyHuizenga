@@ -37,6 +37,7 @@ const udpPort = new osc.UDPPort({
   
 });
 
+
 udpPort.on('message', (oscMsg) => {
   if (oscMsg.address === '/ZIGSIM/t_2x-NTvYcRN220d/touch0') {
     const transformedMessage = {
@@ -81,30 +82,32 @@ app.listen(PORT, () => {
 });
 
 // WebSocket upgrade logic
-app.server = oscServer; // Store the server instance in the app
+app.server = wss; // Store the WebSocket server instance in the app
 app.server.on('upgrade', (request, socket, head) => {
   wss.handleUpgrade(request, socket, head, (client) => {
     wss.emit('connection', client, request);
   });
 });
 
+
+
 app.use(express.json());
 
 
 app.post('/savedrawing', async (req, res) => {
     try {
-      const { savedDrawingData } = req.body; // Assuming you send the data as a JSON object
+      const { savedDrawingData } = req.body;
       
-      const client = await pool.connect();
+      const client = await pool.connect(); // Make sure to use `await pool.connect()`
       await client.query('INSERT INTO drawings (data) VALUES ($1)', [savedDrawingData]);
       client.release();
       
       res.status(200).json({ message: 'Drawing data saved successfully' });
     } catch (error) {
-      console.error('Error saving drawing data:', error); // Add this line to log the error
+      console.error('Error saving drawing data:', error);
       res.status(500).json({ error: 'Error saving drawing data' });
     }
-});
+  });
 
 app.post('/savedrawingtest', async (req, res) => {
     try {
@@ -125,7 +128,12 @@ app.post('/savedrawingtest', async (req, res) => {
     res.json({ message: 'Test route is working!' });
   });
   
-  
+  console.log(process.env.DB_HOST);
+console.log(process.env.DB_PORT);
+console.log(process.env.DB_NAME);
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASSWORD);
+
 
   
 
