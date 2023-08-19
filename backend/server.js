@@ -8,21 +8,18 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app); // Create a http server
-const io = socketIo(server); // Attach socket.io to the server
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3000", // Adjust this to match your frontend URL
+    methods: ["GET", "POST"]
+  }
+});
 
 // Use CORS middleware
 app.use(cors());
 
 // Test route to check the database connection
-app.get('/test-db', async (req, res) => {
-  try {
-    await pool.query('SELECT 1'); 
-    res.status(200).json({ message: 'Database connection successful' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Database connection failed' });
-  }
-});
+
 
 // Server for OSC data
 const oscReceivedData = [];
@@ -54,6 +51,15 @@ udpPort.on('message', (oscMsg) => {
 });
 
 udpPort.open();
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  
+  // Socket event handling here
+  
+  // Send initial data to the connected client, if needed
+  socket.emit('initial-data', oscReceivedData);
+});
 
 app.get('/oscdata', (req, res) => {
   res.json(oscReceivedData);
