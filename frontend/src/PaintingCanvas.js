@@ -6,6 +6,13 @@ const PaintingCanvas = () => {
   const [strokeColor, setStrokeColor] = useState('#0000FF');
   const [drawing, setDrawing] = useState([]);
 
+       /**
+  * TYPE: REACT functional component
+  * NAME: useEffect
+  * FUNCTION: use the useEffect hook to add event listeners to the canvas element
+ */
+
+
   useEffect(() => {
     const handleMouseDown = (event) => {
       const newDrawing = [...drawing];
@@ -14,7 +21,7 @@ const PaintingCanvas = () => {
       setIsPainting(true);
       handleMouseMove(event);
     };
-
+//draw a line for the mouse movement
     const handleMouseMove = (event) => {
       if (!isPainting) return;
       const { clientX, clientY } = event;
@@ -34,11 +41,13 @@ const PaintingCanvas = () => {
       setIsPainting(false);
     };
 
+    // Add event listeners to the canvas element
     const canvas = document.querySelector('.canvas');
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
 
+    // Clean up event listeners when component unmounts
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);

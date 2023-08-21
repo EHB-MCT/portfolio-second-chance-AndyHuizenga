@@ -5,11 +5,14 @@ const socketIo = require('socket.io');
 const osc = require('osc');
 require('dotenv').config();
 const pool = require('./db'); 
-
-
-
 const app = express();
 const server = http.createServer(app);
+
+
+/**
+ * Socket.IO local setup
+ */
+
 const io = socketIo(server, {
   cors: {
     origin: "http://localhost:3000", // Adjust this to match your frontend URL
@@ -20,23 +23,23 @@ const io = socketIo(server, {
 app.use(cors());
 
 /**
- * GET endpoint, filters the incoming object from the OSC port
+ * GET endpoint, filters the incoming object from the OSC port and send to new clients
  *
  * @param object incoming obect from the OSC port to be filtered and transformed into a new object (filterd info: devicetype, adress, running system)
 * @returns object oscMsg, containing X-POS(float) and Y-POS(float)
  * 
  */
 
-const oscReceivedData = [];
+const oscReceivedData = []; // 1:Array to store the received OSC data
 
-
-
+// 2:Create an OSC UDP Port
 const udpPort = new osc.UDPPort({
   localAddress: '0.0.0.0',
   localPort: 6000,
   metadata: true,
 });
 
+// 3:Listen for incoming OSC bundles
 udpPort.on('message', (oscMsg) => {
   console.log('Received OSC message:', oscMsg);
   if (oscMsg.address === '/ZIGSIM/t_2x-NTvYcRN220d/touch0') {
@@ -48,7 +51,7 @@ udpPort.on('message', (oscMsg) => {
     console.log('Received OSC message A:', transformedMessage);
 
     oscReceivedData.push(transformedMessage);
-    io.emit('osc-data-update', transformedMessage); // Emit the new data to all connected clients
+    io.emit('osc-data-update', transformedMessage); // Send the new data to all connected clients
   }
 });
 
@@ -114,6 +117,8 @@ app.get('/', (req, res) => {
  * @returns text message "Data inserted into the database", if data is inserted into the database
  * 
  */
+
+// Middleware to parse the request body as JSON
 app.use(express.json()); // To parse JSON-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 

@@ -4,6 +4,13 @@ import './OSCDataDisplay.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import io from 'socket.io-client'; // Import socket.io-client
 
+
+/**
+  * TYPE: React functional component
+  * NAME: OSCDataDisplay
+  * FUNCTION: display the OSC data in a table
+ */
+
 function OSCDataDisplay() {
   const [oscData, setOSCData] = useState([]);
 
@@ -49,14 +56,34 @@ console.log(oscData, "the whole is not yet herrre");
     };
   }, []); // Empty dependency array means this effect runs only once on mount
 
+  /**
+  * TYPE: button
+  * NAME: showDummyData
+  * FUNCTION: when button show dummy data is pressed , the dummy data is dsiplayed in a table
+ */
+
+
   const showDummyData = () => {
 
     setOSCData(dummyData);
 
   }
+
+
+   /**
+  * TYPE: button
+  * NAME:  handleClearData
+  * FUNCTION: when button clear data is pressed , the OSC data is cleared
+ */
   const handleClearData = async () => {
     setOSCData([]);
   };
+
+     /**
+  * TYPE: button
+  * NAME: saveData
+  * FUNCTION: when button save data is pressed , the OSC data is saved sending a POST request to the backend to save the data in the database
+ */
 
   async function saveData() {
     const drawing = {
